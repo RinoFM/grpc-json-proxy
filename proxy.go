@@ -19,6 +19,7 @@ const (
 	headerGRPCMessage    = "Grpc-Message"
 	headerGRPCStatusCode = "Grpc-Status"
 	headerUseInsecure    = "Grpc-Insecure"
+	headerTargetPort    = "Port-Forward"
 
 	defaultClientTimeout = time.Second * 60
 )
@@ -93,11 +94,14 @@ func (t Transport) RoundTrip(r *http.Request) (*http.Response, error) {
 			client = t.H2Client
 		}
 	}
+	hPort := r.Header.Get(headerTargetPort)
 
+	if hPort == "" {
+		hPort = "80"
+	}
 	// clear requestURI, set in call to director
 	r.RequestURI = ""
-
-	log.Printf("proxying request url=[%s] isJSONGRPC=[%t]\n", r.URL.String(), isGRPC)
+	log.Printf("proxying request url=[%s] isJSONGRPC=[%t]\n hPort=[%s]", r.URL.String(), isGRPC, hPort)
 
 	resp, err := client.Do(r)
 	if err != nil {
