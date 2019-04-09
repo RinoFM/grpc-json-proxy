@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 const (
@@ -37,8 +38,10 @@ func modifyRequestToJSONgRPC(r *http.Request) *http.Request {
 	_, _ = buff.Write(lenBytes)
 	_, _ = buff.Write(body)
 
+	url := strings.Replace(r.URL.String(), "localhost", "localhost:8777", -1)
+
 	// create new request
-	req, _ := http.NewRequest(r.Method, r.URL.String(), buff)
+	req, _ := http.NewRequest(r.Method, url, buff)
 	req.Header = r.Header
 
 	// remove content length header
