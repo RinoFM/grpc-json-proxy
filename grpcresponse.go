@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"log"
 )
 
 func handleGRPCResponse(resp *http.Response) (*http.Response, error) {
@@ -13,6 +14,7 @@ func handleGRPCResponse(resp *http.Response) (*http.Response, error) {
 	if code != "0" && code != "" {
 		buff := bytes.NewBuffer(nil)
 		grpcMessage := resp.Header.Get(headerGRPCMessage)
+		log.Printf("unmarshalling grpcmessage: %s and code: %v", grpcMessage, code)
 		j, _ := json.Marshal(grpcMessage)
 		buff.WriteString(`{"error":` + string(j) + ` ,"code":` + code + `}`)
 
